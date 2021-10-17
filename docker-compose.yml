@@ -1,0 +1,34 @@
+version: '3.3'
+
+services:
+  php_apache:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    depends_on:
+      - mysql
+    volumes:
+    - ./portfolio:/var/www/html/
+    ports:
+    - 8000:80
+
+  mysql:
+    image: mysql
+    command: "--innodb_use_native_aio=0"
+    volumes:
+      - "./db_data:/var/lib/mysql"
+      - "./mysqlconf:/etc/mysql/conf.d"
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: portfolio
+    ports:
+      - 3306:3306
+
+  phpmyadmin:
+    image: phpmyadmin
+    restart: always
+    ports:
+      - 8080:80
+    environment:
+      PMA_HOST: mysql
